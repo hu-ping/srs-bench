@@ -41,7 +41,7 @@ using namespace std;
 #define DefaultRtmpUrl "rtmp://127.0.0.1:1935/live/livestream"
 
 int discovery_options(int argc, char** argv, 
-    bool& show_help, bool& show_version, string& url, int& threads, 
+    bool& show_help, bool& show_version, string& url, int& threads, int& begin,
     double& startup, double& delay, double& error, double& report, int& count
 ){
     int ret = ERROR_SUCCESS;
@@ -53,7 +53,7 @@ int discovery_options(int argc, char** argv,
     
     int opt = 0;
     int option_index = 0;
-    while((opt = getopt_long(argc, argv, "hvc:r:t:s:d:e:m:", long_options, &option_index)) != -1){
+    while((opt = getopt_long(argc, argv, "hvc:r:t:s:d:e:m:b:", long_options, &option_index)) != -1){
         switch(opt){
             ProcessSharedOptions()
             default:
@@ -114,11 +114,11 @@ int main(int argc, char** argv){
         "WARNING!!!\n\n");
     
     bool show_help = false, show_version = false; 
-    string url; int threads = DefaultThread; 
+    string url; int threads = DefaultThread; int begin = 0;
     double start = DefaultStartupSeconds, delay = DefaultDelaySeconds, error = DefaultErrorSeconds;
     double report = DefaultReportSeconds; int count = DefaultCount;
     
-    if((ret = discovery_options(argc, argv, show_help, show_version, url, threads, start, delay, error, report, count)) != ERROR_SUCCESS){
+    if((ret = discovery_options(argc, argv, show_help, show_version, url, threads, begin, start, delay, error, report, count)) != ERROR_SUCCESS){
         Error("discovery options failed. ret=%d", ret);
         return ret;
     }
@@ -139,7 +139,7 @@ int main(int argc, char** argv){
         return ret;
     }
 
-    for(int i = 0; i < threads; i++){
+    for(int i = begin; i < threads + begin; i++){
         StRtmpTaskFast* task = new StRtmpTaskFast();
 
         if((ret = task->Initialize(url, start, delay, error, count)) != ERROR_SUCCESS){

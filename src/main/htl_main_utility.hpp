@@ -75,6 +75,9 @@ LogContext* context = new StLogContext();
             case 'e': \
                 error = atof(optarg); \
                 break; \
+            case 'b': \
+                begin = atoi(optarg); \
+                break; \
             case 'm': \
                 report = atof(optarg); \
                 break;
